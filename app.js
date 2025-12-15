@@ -5,10 +5,12 @@ const MAX_ID = 1010; // Generations up to SV; safe cap
 const spriteEl = document.getElementById("sprite");
 const nameEl = document.getElementById("name");
 const cardEl = document.getElementById("card");
+const rootStyle = document.documentElement.style;
 
 let state = {
     currentId: null,
     revealed: false,
+    typeName: null,
 };
 
 async function fetchPokemon(id) {
@@ -49,10 +51,13 @@ async function loadRandomPokemon() {
 
             const species = await fetchSpecies(id);
             const jpKana = findJapaneseKanaName(species);
+            const primaryType = poke.types?.[0]?.type?.name || null;
 
             state.currentId = id;
+            state.typeName = primaryType;
             spriteEl.src = sprite;
             spriteEl.alt = `ランダムなポケモン (${jpKana})`;
+            applyTypeColors(primaryType);
             // Cache hint state
             return;
         } catch (e) {
@@ -64,6 +69,37 @@ async function loadRandomPokemon() {
     // Fallback
     spriteEl.removeAttribute('src');
     spriteEl.alt = "画像を取得できませんでした";
+}
+
+// Type color mapping based on common palette
+const TYPE_COLORS = {
+    normal: '#A8A77A',
+    fire: '#EE8130',
+    water: '#6390F0',
+    electric: '#F7D02C',
+    grass: '#7AC74C',
+    ice: '#96D9D6',
+    fighting: '#C22E28',
+    poison: '#A33EA1',
+    ground: '#E2BF65',
+    flying: '#A98FF3',
+    psychic: '#F95587',
+    bug: '#A6B91A',
+    rock: '#B6A136',
+    ghost: '#735797',
+    dragon: '#6F35FC',
+    dark: '#705746',
+    steel: '#B7B7CE',
+    fairy: '#D685AD'
+};
+
+function applyTypeColors(typeName) {
+    const base = TYPE_COLORS[typeName] || '#f5f5f5';
+    // Derive card bg as a lightened version for contrast
+    const cardBg = base;
+    rootStyle.setProperty('--type-color', base);
+    rootStyle.setProperty('--type-card-bg', '#ffffff');
+    rootStyle.setProperty('--type-card-shadow', 'rgba(0,0,0,0.1)');
 }
 
 async function revealOrNext() {
