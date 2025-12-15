@@ -33,5 +33,14 @@ python3 -m http.server 8080
 
 静的ホスティング（GitHub Pages, Netlify, Vercel など）にそのまま配置可能です。
 
+### GitHub Pages へのデプロイ
+
+1. GitHubのリポジトリ設定で Pages を有効化し、Source を「GitHub Actions」に設定
+2. このリポジトリにプッシュ（`main` ブランチ）すると自動デプロイされます。
+	- ワークフロー: `.github/workflows/deploy-pages.yml`
+3. デプロイURLは Actions のジョブ出力（`Deploy to GitHub Pages` ステップ）またはリポジトリの Pages 設定で確認できます。
+
+独自ドメインを使う場合は `CNAME` ファイルをリポジトリ直下に追加してください。
+
 # pokeapi-app
 Pokemon quiz app by using pokeapi
