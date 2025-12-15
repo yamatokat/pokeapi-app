@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ポケモン ランダム表示 PWA</title>
+    <meta name="theme-color" content="#ffcb05" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="icons/icon-192.png" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <main id="app" class="app" aria-live="polite">
+        <h1 class="title" aria-label="ポケモンのなまえわかるかな？">ポケモンのなまえわかるかな？</h1>
+        <div class="card" id="card" tabindex="0" role="button" aria-label="タップして名前を表示">
+            <img id="sprite" alt="ポケモン画像" />
+            <div id="name" class="name" aria-hidden="true"></div>
+            <div class="hint">タップするとなまえがわかるよ<br />もういちどタップするとつぎのクイズへ</div>
+        </div>
+    </main>
+    <script src="app.js"></script>
+</body>
+
+</html>
