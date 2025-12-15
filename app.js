@@ -97,9 +97,9 @@ cardEl.addEventListener('keydown', (e) => {
 // Initial load
 loadRandomPokemon();
 
-// Register service worker
+// Register service worker (relative path + scoped to current directory)
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js').catch(() => { });
+        navigator.serviceWorker.register('service-worker.js', { scope: './' }).catch(() => { });
     });
 }
