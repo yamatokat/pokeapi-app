@@ -18,8 +18,17 @@
         <div class="card" id="card" tabindex="0" role="button" aria-label="タップして名前を表示">
             <img id="sprite" alt="ポケモン画像" />
             <div id="name" class="name" aria-hidden="true"></div>
+            <div class="info-row">
+                <span class="label">タイプ:</span>
+                <span id="types" class="types" aria-label="ポケモンのタイプ"></span>
+            </div>
+            <div class="info-row">
+                <span class="label">つよさ:</span>
+                <span id="strength" class="strength" aria-label="種族値の合計"></span>
+            </div>
             <div class="hint">タップするとなまえがわかるよ<br />もういちどタップするとつぎのクイズへ</div>
         </div>
+
     </main>
     <script src="app.js"></script>
 </body>

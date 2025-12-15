@@ -6,11 +6,18 @@ const spriteEl = document.getElementById("sprite");
 const nameEl = document.getElementById("name");
 const cardEl = document.getElementById("card");
 const rootStyle = document.documentElement.style;
+const displayNameEl = document.getElementById('display-name') || null;
+const typesEl = document.getElementById('types') || null;
+const strengthEl = document.getElementById('strength') || null;
+const infoEl = document.querySelector('.info') || null;
 
 let state = {
     currentId: null,
     revealed: false,
     typeName: null,
+    allTypes: [],
+    strength: null,
+    jpName: null,
 };
 
 async function fetchPokemon(id) {
@@ -40,6 +47,9 @@ async function loadRandomPokemon() {
     state.revealed = false;
     nameEl.textContent = "";
     nameEl.setAttribute("aria-hidden", "true");
+    // Clear info area until reveal
+    if (typeof clearInfo === 'function') clearInfo();
+    if (infoEl) infoEl.classList.remove('show');
 
     // Try until we get a usable sprite
     for (let tries = 0; tries < 5; tries++) {
@@ -51,10 +61,15 @@ async function loadRandomPokemon() {
 
             const species = await fetchSpecies(id);
             const jpKana = findJapaneseKanaName(species);
-            const primaryType = poke.types?.[0]?.type?.name || null;
+            const types = (poke.types || []).map(t => t.type?.name).filter(Boolean);
+            const primaryType = types[0] || null;
+            const totalStats = (poke.stats || []).reduce((sum, s) => sum + (s.base_stat || 0), 0);
 
             state.currentId = id;
             state.typeName = primaryType;
+            state.allTypes = types;
+            state.strength = totalStats;
+            state.jpName = jpKana;
             spriteEl.src = sprite;
             spriteEl.alt = `ランダムなポケモン (${jpKana})`;
             applyTypeColors(primaryType);
@@ -93,6 +108,28 @@ const TYPE_COLORS = {
     fairy: '#D685AD'
 };
 
+// Japanese labels for type names
+const TYPE_LABEL_JA = {
+    normal: 'ノーマル',
+    fire: 'ほのお',
+    water: 'みず',
+    electric: 'でんき',
+    grass: 'くさ',
+    ice: 'こおり',
+    fighting: 'かくとう',
+    poison: 'どく',
+    ground: 'じめん',
+    flying: 'ひこう',
+    psychic: 'エスパー',
+    bug: 'むし',
+    rock: 'いわ',
+    ghost: 'ゴースト',
+    dragon: 'ドラゴン',
+    dark: 'あく',
+    steel: 'はがね',
+    fairy: 'フェアリー'
+};
+
 function applyTypeColors(typeName) {
     const base = TYPE_COLORS[typeName] || '#f5f5f5';
     // Derive card bg as a lightened version for contrast
@@ -102,20 +139,36 @@ function applyTypeColors(typeName) {
     rootStyle.setProperty('--type-card-shadow', 'rgba(0,0,0,0.1)');
 }
 
+function renderInfo(jpName, types, totalStats) {
+    if (displayNameEl) displayNameEl.textContent = jpName || '';
+    if (typesEl) {
+        typesEl.innerHTML = '';
+        types.forEach((t) => {
+            const badge = document.createElement('span');
+            badge.className = 'type-badge';
+            badge.textContent = TYPE_LABEL_JA[t] || t;
+            badge.title = t;
+            badge.style.backgroundColor = TYPE_COLORS[t] || '#888';
+            typesEl.appendChild(badge);
+        });
+    }
+    if (strengthEl) strengthEl.textContent = String(totalStats ?? '');
+}
+
+function clearInfo() {
+    if (displayNameEl) displayNameEl.textContent = '';
+    if (typesEl) typesEl.innerHTML = '';
+    if (strengthEl) strengthEl.textContent = '';
+}
+
 async function revealOrNext() {
     if (!state.revealed) {
-        // Reveal Japanese kana name for current species
-        try {
-            const species = await fetchSpecies(state.currentId);
-            const jpKana = findJapaneseKanaName(species);
-            nameEl.textContent = jpKana;
-            nameEl.setAttribute("aria-hidden", "false");
-            state.revealed = true;
-        } catch (e) {
-            nameEl.textContent = "名前取得に失敗";
-            nameEl.setAttribute("aria-hidden", "false");
-            state.revealed = true;
-        }
+        const jpKana = state.jpName || '名前取得に失敗';
+        nameEl.textContent = jpKana;
+        nameEl.setAttribute("aria-hidden", "false");
+        renderInfo(jpKana, state.allTypes || [], state.strength ?? '');
+        if (infoEl) infoEl.classList.add('show');
+        state.revealed = true;
     } else {
         await loadRandomPokemon();
     }
