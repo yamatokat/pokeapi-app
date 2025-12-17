@@ -10,6 +10,8 @@ const displayNameEl = document.getElementById('display-name') || null;
 const typesEl = document.getElementById('types') || null;
 const strengthEl = document.getElementById('strength') || null;
 const infoEl = document.querySelector('.info') || null;
+const statVisitsEl = document.getElementById('stat-visits') || null;
+const statQuizzesEl = document.getElementById('stat-quizzes') || null;
 
 let state = {
     currentId: null,
@@ -18,7 +20,33 @@ let state = {
     allTypes: [],
     strength: null,
     jpName: null,
+    visits: 0,
+    quizzes: 0,
 };
+
+// Simple localStorage counter helpers
+function getCounter(key) {
+    const raw = localStorage.getItem(key);
+    const num = Number(raw);
+    return Number.isFinite(num) && num >= 0 ? num : 0;
+}
+
+function setCounter(key, value) {
+    try {
+        localStorage.setItem(key, String(Math.max(0, Math.floor(value))));
+    } catch (_) { /* ignore storage errors */ }
+}
+
+function incCounter(key) {
+    const v = getCounter(key) + 1;
+    setCounter(key, v);
+    return v;
+}
+
+function updateStatsWidget() {
+    if (statVisitsEl) statVisitsEl.textContent = String(state.visits);
+    if (statQuizzesEl) statQuizzesEl.textContent = String(state.quizzes);
+}
 
 async function fetchPokemon(id) {
     const res = await fetch(`${API_BASE}/pokemon/${id}`);
@@ -44,6 +72,8 @@ function findJapaneseKanaName(speciesJson) {
 }
 
 async function loadRandomPokemon() {
+    // Count a quiz shown (each successful load increments)
+    state.quizzes = getCounter('quizzes');
     state.revealed = false;
     nameEl.textContent = "";
     nameEl.setAttribute("aria-hidden", "true");
@@ -73,6 +103,9 @@ async function loadRandomPokemon() {
             spriteEl.src = sprite;
             spriteEl.alt = `ランダムなポケモン (${jpKana})`;
             applyTypeColors(primaryType);
+            // Increment quiz counter and update widget when a sprite is available
+            state.quizzes = incCounter('quizzes');
+            updateStatsWidget();
             // Cache hint state
             return;
         } catch (e) {
@@ -184,6 +217,10 @@ cardEl.addEventListener('keydown', (e) => {
 });
 
 // Initial load
+// Count visit
+state.visits = incCounter('visits');
+updateStatsWidget();
+// Load first quiz
 loadRandomPokemon();
 
 // Register service worker (relative path + scoped to current directory)

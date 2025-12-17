@@ -127,6 +127,41 @@ body {
     line-height: 1.6;
     margin-top: 16px;
     /* add extra spacing above hint */
+
+    /* Stats widget */
+    .stats-widget {
+        position: fixed;
+        right: 12px;
+        bottom: 12px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.85);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        font-size: 12px;
+        color: #333;
+        backdrop-filter: saturate(1.2) blur(6px);
+    }
+
+    .stats-widget .stat-item strong {
+        font-weight: 700;
+    }
+
+    .stats-widget .divider {
+        margin: 0 6px;
+        color: #999;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .stats-widget {
+            background: rgba(30, 30, 30, 0.7);
+            color: #ddd;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .stats-widget .divider {
+            color: #aaa;
+        }
+    }
 }
 
 @media (prefers-color-scheme: dark) {
