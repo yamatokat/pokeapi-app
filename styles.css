@@ -32,6 +32,21 @@ body {
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
 }
 
+.stats-widget .stats-reset {
+    margin-left: 8px;
+    padding: 2px 8px;
+    font-size: 11px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    cursor: pointer;
+}
+
+.stats-widget .stats-reset:hover {
+    background: #fff;
+}
+
 .app {
     width: 100%;
     max-width: 420px;
@@ -39,6 +54,16 @@ body {
 }
 
 .info {
+    .stats-widget .stats-reset {
+        border-color: rgba(255, 255, 255, 0.2);
+        background: rgba(50, 50, 50, 0.8);
+        color: #eee;
+    }
+
+    .stats-widget .stats-reset:hover {
+        background: rgba(60, 60, 60, 0.95);
+    }
+
     display: none;
     /* hidden until reveal */
     background: color-mix(in oklab, var(--type-card-bg) 85%, #ffffff);

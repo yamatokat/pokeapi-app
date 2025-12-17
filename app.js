@@ -12,6 +12,7 @@ const strengthEl = document.getElementById('strength') || null;
 const infoEl = document.querySelector('.info') || null;
 const statVisitsEl = document.getElementById('stat-visits') || null;
 const statQuizzesEl = document.getElementById('stat-quizzes') || null;
+const statResetBtn = document.getElementById('stats-reset') || null;
 
 let state = {
     currentId: null,
@@ -46,6 +47,14 @@ function incCounter(key) {
 function updateStatsWidget() {
     if (statVisitsEl) statVisitsEl.textContent = String(state.visits);
     if (statQuizzesEl) statQuizzesEl.textContent = String(state.quizzes);
+}
+
+function resetCounters() {
+    setCounter('visits', 0);
+    setCounter('quizzes', 0);
+    state.visits = 0;
+    state.quizzes = 0;
+    updateStatsWidget();
 }
 
 async function fetchPokemon(id) {
@@ -217,8 +226,13 @@ cardEl.addEventListener('keydown', (e) => {
 });
 
 // Initial load
-// Count visit
+// Ensure counters exist
+setCounter('visits', getCounter('visits'));
+setCounter('quizzes', getCounter('quizzes'));
+// Count visit after ensuring keys
 state.visits = incCounter('visits');
+// Initialize quizzes display from storage (will increment on successful load)
+state.quizzes = getCounter('quizzes');
 updateStatsWidget();
 // Load first quiz
 loadRandomPokemon();
@@ -227,5 +241,12 @@ loadRandomPokemon();
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('service-worker.js', { scope: './' }).catch(() => { });
+    });
+}
+
+// Reset button handler
+if (statResetBtn) {
+    statResetBtn.addEventListener('click', () => {
+        resetCounters();
     });
 }
